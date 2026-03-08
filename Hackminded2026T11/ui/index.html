@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REDACTRA</title>
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <div id="authShell" class="auth-shell">
+      <button id="authThemeToggle" class="theme-btn" type="button">Dark</button>
+      <section class="auth-card">
+        <div class="auth-head">
+          <div class="logo-block">R</div>
+          <h1>REDACTRA</h1>
+          <p>PII Sanitization Platform</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button id="tabLogin" class="active" type="button">Login</button>
+          <button id="tabRegister" type="button">Create Account</button>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <label>Email</label>
+          <input id="loginEmail" type="email" required placeholder="you@example.com" />
+          <label>Password</label>
+          <div class="password-wrap">
+            <input id="loginPassword" type="password" required placeholder="********" />
+            <button id="toggleLoginPassword" type="button" class="plain-btn">Show</button>
+          </div>
+          <button class="primary-btn" type="submit">LOGIN</button>
+          <p id="loginError" class="error"></p>
+        </form>
+
+        <form id="registerForm" class="auth-form hidden">
+          <label>Full Name</label>
+          <input id="regName" type="text" placeholder="John Doe" />
+          <label>Email</label>
+          <input id="regEmail" type="email" required placeholder="new@example.com" />
+          <label>Password</label>
+          <input id="regPassword" type="password" required placeholder="Minimum 8 chars" />
+          <label>Confirm Password</label>
+          <input id="regConfirm" type="password" required placeholder="Re-enter password" />
+          <input id="regHoney" type="text" class="hidden" autocomplete="off" tabindex="-1" />
+          <p id="passStrength" class="meta"></p>
+          <button class="primary-btn" type="submit">CREATE ACCOUNT</button>
+          <p id="regMsg" class="meta"></p>
+        </form>
+      </section>
+    </div>
+
+    <div id="appShell" class="hidden">
+      <header class="topbar">
+        <div class="top-left">
+          <div class="logo-mini">R</div>
+          <div class="brand">REDACTRA</div>
+        </div>
+        <nav id="nav" class="nav"></nav>
+        <div class="top-right">
+          <button id="appThemeToggle" class="theme-btn" type="button">Dark</button>
+          <button id="logoutBtn" class="plain-btn" type="button">Logout</button>
+          <span id="roleBadge" class="badge"></span>
+        </div>
+      </header>
+
+      <main class="page">
+        <section id="viewDashboard" class="view">
+          <h2>Dashboard</h2>
+          <p class="meta">Your files</p>
+
+          <div id="summaryGrid" class="grid three"></div>
+
+          <h3>PII Risk Distribution</h3>
+          <div id="riskGrid" class="grid four"></div>
+
+          <div class="toolbar">
+            <h3>My Files</h3>
+            <div class="filters">
+              <input id="fileSearch" placeholder="Search File ID" autocomplete="off" spellcheck="false" />
+              <select id="statusFilter"><option value="">All Status</option></select>
+              <select id="riskFilter">
+                <option value="">All Risk</option>
+                <option value="LOW">Low</option>
+                <option value="MODERATE">Moderate</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+              <button id="toUpload" class="primary-btn" type="button">Upload File</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>File ID</th>
+                  <th>Format</th>
+                  <th>Risk</th>
+                  <th>Status</th>
+                  <th>Expires</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="filesBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="viewUpload" class="view hidden">
+          <h2>Upload File</h2>
+          <p class="meta">PII scan and sanitization</p>
+
+          <div class="mode-row">
+            <span>Mode:</span>
+            <button id="modeSingle" class="primary-btn small" type="button">Single</button>
+            <button id="modeBatch" class="ghost-btn small" type="button">Folder (ZIP)</button>
+          </div>
+
+          <div id="uploadSelectArea">
+            <div id="dropZone" class="drop-zone">
+              <p>Drop file here or click to browse</p>
+              <p class="meta">PDF, DOCX, XLSX, SQL, CSV, JSON, TXT, PNG, JPG, JPEG (ZIP for batch mode)</p>
+              <input id="uploadInput" type="file" />
+            </div>
+          </div>
+
+          <div id="uploadPreview" class="upload-preview hidden">
+            <h3>File selected</h3>
+            <div id="uploadFileInfo" class="file-info-box"></div>
+            <div class="mode-row">
+              <span>Masking:</span>
+              <select id="maskMode">
+                <option value="redact">Redact</option>
+                <option value="tokenize">Tokenize</option>
+                <option value="mask">Mask</option>
+              </select>
+            </div>
+            <div class="actions">
+              <button id="uploadSubmit" class="primary-btn" type="button">Submit</button>
+              <button id="uploadChangeFile" class="ghost-btn" type="button">Change file</button>
+            </div>
+          </div>
+
+          <div id="uploadScanning" class="upload-scanning hidden">
+            <p id="uploadScanStep" class="scan-step">Running malware scan...</p>
+            <div class="scan-progress-wrap">
+              <div id="uploadProgressBar" class="scan-progress-bar"></div>
+            </div>
+            <p id="uploadScanStatus" class="meta"></p>
+          </div>
+
+          <p id="uploadStatus" class="meta"></p>
+        </section>
+
+        <section id="viewResults" class="view hidden">
+          <div class="toolbar">
+            <div>
+              <h2>File Results</h2>
+              <p id="resultMeta" class="meta"></p>
+              <div class="file-select-row">
+                <label for="fileResultSelect">View results for:</label>
+                <select id="fileResultSelect" class="file-result-select">
+                  <option value="">— Select a file —</option>
+                </select>
+              </div>
+            </div>
+            <button id="scanAnother" class="primary-btn" type="button">Scan Another File</button>
+          </div>
+
+          <div id="resultChips" class="chips"></div>
+
+          <div class="actions">
+            <button id="downloadSanitized" class="primary-btn" type="button">Download Sanitized File</button>
+            <button id="downloadOriginal" class="ghost-btn hidden" type="button">Download Original (Admin)</button>
+          </div>
+
+          <h3>PII Entities</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Entity Type</th>
+                  <th id="thOriginal" class="hidden">Original Value</th>
+                  <th>Masked Value</th>
+                  <th>Confidence</th>
+                  <th id="thOverride" class="hidden">Override</th>
+                </tr>
+              </thead>
+              <tbody id="entityBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="viewOperations" class="view hidden">
+          <h2>Operations</h2>
+          <p class="meta">User Management & Audit Log</p>
+
+          <div class="tab-row">
+            <button id="usersTab" class="tab active" type="button">User Management</button>
+            <button id="auditTab" class="tab" type="button">Audit Log</button>
+          </div>
+
+          <div id="usersPanel">
+            <div class="toolbar">
+              <div class="filters">
+                <input id="userSearch" placeholder="Search by email" />
+                <select id="userRoleFilter">
+                  <option value="">All Roles</option>
+                  <option value="admin">Admin</option>
+                  <option value="user">User</option>
+                </select>
+                <select id="userStatusFilter">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <button id="showAddUser" class="primary-btn" type="button">Add New User</button>
+            </div>
+
+            <div id="addUserBox" class="inline-form hidden">
+              <input id="newUserEmail" placeholder="email" />
+              <input id="newUserPassword" placeholder="password" type="password" />
+              <select id="newUserRole">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button id="createUser" class="ghost-btn" type="button">Create</button>
+            </div>
+            <p id="userMsg" class="meta"></p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Files Uploaded</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="auditPanel" class="hidden">
+            <div class="actions">
+              <button id="refreshAudit" class="ghost-btn" type="button">Refresh</button>
+              <button id="exportAudit" class="ghost-btn" type="button">Export PDF</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>User</th>
+                    <th>File</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="auditBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="/ui/app.js"></script>
+  </body>
+</html>
+
+
